@@ -22,7 +22,7 @@
  */
 bool bit_stuffing(frame &f)
 {
-    bool ans = false;
+    bool ans = true;
 
     if (f.message[0] != '\0' || f.message[f.size + 1] != '\0')
         ans = false;
@@ -30,8 +30,41 @@ bool bit_stuffing(frame &f)
     {
         f.message[0] = (int)FLAG;
         f.message[f.size + 1] = (int)FLAG;
-        ans = true;
+    }
+    
+    //cambia bit se vede un flag da mandare come messaggio
+    if (ans == true)
+    {
+        for (int i = 1; i <= f.size; i++)
+            if (f.message[i] == (int)FLAG)
+                f.message[i] -= 2; //cambia penultimo bit
     }
 
+    return ans;
+}
+
+/**
+ * @brief Aggiunge il byte stuffing/character stuffing al frame.
+ * 
+ * @param f Oggetto @c frame in cui aggiungere bit_stuffing.
+ * @return true Se l'operazione è andata a buon termine.
+ * @return false Se il primo o l'ultimo elemento sono già pieni.
+ */
+bool byte_stuffing(frame &f)
+{
+    bool ans = true;
+    
+    if (f.message[0] != '\0' || f.message[1] != '\0' || f.message[f.size + 1] != '\0' || f.message[f.size + 2] != '\0')
+        ans = false;
+    else
+    {
+        f.message[0] = (int)ESC;
+        f.message[1] = (int)SOT;
+        f.message[f.size + 1] = (int)EOT;
+        f.message[f.size + 2] = (int)ESC;
+    }
+    
+    //todo: duplica caratteri in f.message
+    
     return ans;
 }
