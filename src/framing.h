@@ -26,17 +26,20 @@ bool bit_stuffing(frame &f)
 
     if (f.message[0] != '\0' || f.message[f.size + 1] != '\0')
         ans = false;
-    else
+    else if (f.size <= FRAME_MAXEL - 1)
     {
-        f.message[0] = (int)FLAG;
-        f.message[f.size + 1] = (int)FLAG;
+        f.message[0] = (char)FLAG;
+        f.message[f.size + 1] = (char)FLAG;
+        size++;
     }
+    else //subottimale ma piú chiaro, probabilmente si puó fare meglio
+        ans = false;
     
     //cambia bit se vede un flag da mandare come messaggio
     if (ans == true)
     {
         for (int i = 1; i <= f.size; i++)
-            if (f.message[i] == (int)FLAG)
+            if (f.message[i] == (char)FLAG)
                 f.message[i] -= 2; //cambia penultimo bit
     }
 
@@ -56,13 +59,16 @@ bool byte_stuffing(frame &f)
     
     if (f.message[0] != '\0' || f.message[1] != '\0' || f.message[f.size + 1] != '\0' || f.message[f.size + 2] != '\0')
         ans = false;
-    else
+    else if (f.size <= FRAME_MAXEL - 2)
     {
-        f.message[0] = (int)ESC;
-        f.message[1] = (int)SOT;
-        f.message[f.size + 1] = (int)EOT;
-        f.message[f.size + 2] = (int)ESC;
+        f.message[0] = ESC;
+        f.message[1] = STX;
+        f.message[f.size + 1] = ETX;
+        f.message[f.size + 2] = ESC;
+        size += 2;
     }
+    else //come bit_stuffing
+        ans = false;
     
     //todo: duplica caratteri in f.message
     
