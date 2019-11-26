@@ -11,25 +11,29 @@
  */
 #include "..\src\tools.h"
 #include "..\src\checksum.h"
+#include "..\src\framing.h"
 #include <iostream>
 #include <string>
 
 int main()
 {
     frame f;
-    f.size = 4;
 
-    std::string messaggio;
+    std::string message;
     std::cout << "Inserire il messaggio: ";
-    std::cin >> messaggio;
+    std::cin >> message;
 
-    int i = 0;
-    for (char var : messaggio)
+    f.size = message.size();
+    f.message[0] = '\0';
+    f.message[f.size - 1] = '\0';
+    int i = 1;
+    for (char var : message)
     {
         f.message[i] = var;
         i++;
     }
 
+    bit_stuffing(f);
     parity_bit(f);
     i = 0;
     for (i = 0; i < f.size; i++)

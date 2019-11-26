@@ -25,10 +25,16 @@
  */
 void parity_bit(frame &f)
 {
+    // std::bitset definisce un set di <n> bit
+    // In questo caso un set di 8 bit
     std::bitset<8> binary_char;
+
     for (int i = 0; i < f.size; i++)
     {
+        // Trasforma ogni carattere del messaggio nel set di bit
         binary_char = (int)f.message[i];
+
+        // Il metodo "count()" restituisce il numero di bit a 1
         f.checksum[i] = ((binary_char.count() % 2) == 0 ? '0' : '1');
     }
 }

@@ -41,7 +41,7 @@ const char ETX = 3;
  *
  * La sintassi qui sotto di @c FLAG è equivalente alla "string".
  */
-const char *FLAG = "01111110";
+const char FLAG = 0b01111110;
 
 /**
  * @brief Definisce la lunghezza massima di un frame.
