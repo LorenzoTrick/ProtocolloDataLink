@@ -1,6 +1,13 @@
 /**
  * @file tools.h
+ * @author Lanzani Andrea
+ * @author Pirola Lorenzo
  * @brief File di utilità.
+ * @version 0.1
+ * @date 2019-11-26
+ *
+ * @copyright Copyright (c) 2019
+ *
  * @todo Aggiungere altre macro o struct se necessario.
  *
  * Contiene macro e struct utili per l'implementazione
@@ -32,13 +39,12 @@ const char ETX = 3;
  *
  * La sintassi qui sotto di @c FLAG è equivalente alla "string".
  */
-const char* FLAG = "01111110";
-
+const char *FLAG = "01111110";
 
 /**
  * @brief Definisce la lunghezza massima di un frame.
  */
- #define FRAME_MAXEL 256
+#define FRAME_MAXEL 256
 
 /**
  * @brief Struttura di un frame.
@@ -46,14 +52,14 @@ const char* FLAG = "01111110";
 struct frame
 {
     /** Messaggio del frame. */
-    char* message[FRAME_MAXEL];
+    char message[FRAME_MAXEL];
     /**
      * @brief Controllo sull'errore.
      * 
      * La lunghezza del checksum è uguale a quella del messaggio.
      * In caso di parity bit servirà infatti un bit per carattere.
      */
-    char* checksum[FRAME_MAXEL];
+    char checksum[FRAME_MAXEL];
     /** Equivalente al numEl. */
     int size;
 };
@@ -69,7 +75,7 @@ struct frame
 struct packet
 {
     /** Messaggio del pacchetto. */
-    char* message[512];
+    char message[512];
     /** Equivalente al numEl. */
     int size;
 };
