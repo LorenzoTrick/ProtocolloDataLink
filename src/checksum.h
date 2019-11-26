@@ -11,6 +11,7 @@
  * Contiene i metodi per il controllo e la correzione sugli errori.
  */
 
+#pragma once
 #include "tools.h"
 #include <bitset>
 

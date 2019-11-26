@@ -15,6 +15,8 @@
  * Inserire qui tutto ciò che può servire in più parti del codice principale.
  */
 
+#pragma once
+
 /**
  * @brief Definisce il carattere ASCII 'ESC'. 
  *

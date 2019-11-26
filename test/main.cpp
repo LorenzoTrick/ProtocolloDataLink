@@ -9,8 +9,8 @@
  * @copyright Copyright (c) 2019
  * 
  */
-#include "tools.h"
-#include "checksum.h"
+#include "..\src\tools.h"
+#include "..\src\checksum.h"
 #include <iostream>
 #include <string>
 
@@ -20,6 +20,7 @@ int main()
     f.size = 4;
 
     std::string messaggio;
+    std::cout << "Inserire il messaggio: ";
     std::cin >> messaggio;
 
     int i = 0;
@@ -30,6 +31,13 @@ int main()
     }
 
     parity_bit(f);
-    std::cout << f.checksum;
+    i = 0;
+    for (i = 0; i < f.size; i++)
+    {
+        std::cout << f.checksum[i];
+    }
+
+    std::cout << std::endl;
+    system("pause");
     return 0;
 }
