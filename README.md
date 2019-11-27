@@ -22,7 +22,7 @@ Lo Stop&Wait per canali rumorosi implementa anche il "time-out".
 Per ora NON si implementa il piggybacking.
 
 ### Framing (framing.h):
-- [ ] Character stuffing / Byte stuffing
+- [x] Character stuffing / Byte stuffing
 - [ ] Bit stuffing
 
 Si ricorda che il flag per il bit stuffing e i codici ASCII per il character stuffing possono essere aggiunti nel file "tools.h" per tenere tutto più organizzato.
