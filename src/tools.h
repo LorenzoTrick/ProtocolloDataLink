@@ -130,20 +130,20 @@ public:
             std::cout << f.message[i];
         std::cout << std::endl;
     }
-    /*frame receive()
+
+    void receive(frame &f)
     {
-        frame f;
-        f.size = 0;
+        f.size = 2;
 
         int i = 0;
-        for (char c = 'A'; c < 'Z'; c++)
+        f.message[i++] = (char)FLAG;
+        for (char c = 'A'; c <= 'Z'; c++)
         {
             f.message[i] = c;
             f.checksum[i] = '0';
             f.size++;
             i++;
         }
-
-        return f;
-    }*/
+        f.message[i] = (char)FLAG;
+    }
 };

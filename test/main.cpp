@@ -90,4 +90,9 @@ void test_stop_and_wait()
     }
 
     protocol.send(p);
+
+    protocol.receive(p);
+    for (int i = 0; i < p.size; i++)
+        std::cout << p.message[i];
+    std::cout << std::endl;
 }

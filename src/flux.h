@@ -19,7 +19,7 @@
 /**
  * @brief Simula il protocollo Heaven.
  * 
- * In questo caso si usa il bit stuffing e bit di parità.
+ * In questo caso si usa il bit stuffing.
  */
 class Heaven
 {
@@ -40,7 +40,7 @@ public:
     /**
      * @brief Costruisce i frame dal pacchetto e li invia.
      * 
-     * @param p Oggetto @c packet da inviare
+     * @param p Oggetto @c packet da inviare.
      */
     void send(packet &p)
     {
@@ -54,7 +54,7 @@ public:
             // oppure se il messaggio del pacchetto è finito
             if (f.size == FRAME_MAXEL - 2 || i + 1 == p.size)
             {
-                // Esegue parity bit e bit stuffing e lo invia
+                // Esegue parity bit e lo invia
                 parity_bit(f);
                 bit_stuffing(f);
                 physical.send(f);
@@ -64,7 +64,24 @@ public:
             }
         }
     }
-    void receive(packet &p);
+
+    /**
+     * @brief Ricostruisce il pacchetto, dopo aver ricevuto i frame.
+     * 
+     * @param p Oggetto @c packet da ricostruire.
+     */
+    void receive(packet &p)
+    {
+        // Riceve il frame e rimuove il bit stuffing
+        frame f;
+        physical.receive(f);
+        remove_bit_stuffing(f);
+
+        // Ricostruisce il pacchetto
+        p.size = 0;
+        for (int i = 0; i < f.size; i++)
+            p.message[p.size++] = f.message[i];
+    }
 
 private:
     frame f;
