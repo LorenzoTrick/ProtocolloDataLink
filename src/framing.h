@@ -37,7 +37,7 @@ bool bit_stuffing(frame &f)
                 f.message[i] -= 2; // Cambia penultimo bit
 
         // Inserisce flag alla fine
-		insert_at(f.message, f.size, f.size, (char)FLAG);
+	f.message[f.size++] = (char)FLAG;
     }
     else
         ans = false;
