@@ -8,7 +8,7 @@
  * 
  * @copyright Copyright (c) 2019
  * 
- * Contiene i metodi per il controllo e la correzione sugli errori.
+ * Contiene i funzioni per applicare il controllo e la correzione sugli errori.
  */
 
 #pragma once

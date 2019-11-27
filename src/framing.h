@@ -8,6 +8,7 @@
  * 
  * @copyright Copyright (c) 2019
  * 
+ * Contiene funzione per applicare il "frame synchronization" (o framing).
  */
 
 #pragma once
