@@ -15,41 +15,58 @@
 #include <iostream>
 #include <string>
 
+// Funzioni di prova
+void cin();
+void test_bit_stuffing();
+void test_parity_bit();
+
+frame f;
 int main()
 {
-    frame f;
+    test_parity_bit();
+    system("pause");
+    return 0;
+}
 
+void cin()
+{
+    // Inserisce nel frame la stringa passata in ingresso
     std::string message;
     std::cout << "Inserire il messaggio: ";
     std::cin >> message;
 
     f.size = message.size();
     int i = 0;
-    for (char var : message)
-    {
-        f.message[i] = var;
-        i++;
-    }
+    for (char c : message)
+        f.message[i++] = c;
+}
 
+void test_bit_stuffing()
+{
+    cin();
+
+    // Aggiunge bit stuffing e stampa il messaggio
     bit_stuffing(f);
     for (size_t i = 0; i < f.size; i++)
         std::cout << f.message[i];
     std::cout << std::endl;
 
+    // Rimuove bit stuffing e stampa il messaggio
     remove_bit_stuffing(f);
     for (size_t i = 0; i < f.size; i++)
         std::cout << f.message[i];
     std::cout << std::endl;
+}
 
-    /*
-    parity_bit(f);
-    i = 0;
-    for (i = 0; i < f.size; i++)
-    {
-        std::cout << f.checksum[i];
-    }
-    */
+void test_parity_bit()
+{
+    cin();
 
-    system("pause");
-    return 0;
+    //parity_bit(f);
+
+    // Forzo il checksum a essere sbagliato
+    for (size_t i = 0; i < f.size; i++)
+        f.checksum[i] = '0';
+
+    std::cout << (check_parity_bit(f) ? "Corretto" : "Non corretto") << std::endl;
 }
