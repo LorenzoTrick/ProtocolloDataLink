@@ -55,7 +55,6 @@ public:
             if (f.size == FRAME_MAXEL - 2 || i + 1 == p.size)
             {
                 // Esegue parity bit e lo invia
-                parity_bit(f);
                 bit_stuffing(f);
                 physical.send(f);
 
