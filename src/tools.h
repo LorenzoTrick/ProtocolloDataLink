@@ -113,6 +113,11 @@ void insert_at(char *message, int &size, int pos, char value)
     size++;
 }
 
+void is_special_char(char c)
+{
+	return (c == ESC || c == STX || c == ETX);
+}
+
 /**
  * @brief Classe per il livello fisico.
  * 
