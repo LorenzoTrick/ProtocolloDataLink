@@ -20,7 +20,7 @@
  * @param f Oggetto @c frame in cui aggiungere bit_stuffing.
  * @return true Se l'operazione è andata a buon termine.
  * @return false Se la grandezza supera quella del MAXEL.
- *               In pratica se la grandezza è pari o superiore a 255.
+ *               In pratica se f.size è pari o superiore a 255.
  */
 bool bit_stuffing(frame &f)
 {

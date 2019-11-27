@@ -10,8 +10,9 @@
  * 
  */
 #include "..\src\tools.h"
-#include "..\src\checksum.h"
 #include "..\src\framing.h"
+#include "..\src\checksum.h"
+#include "..\src\flux.h"
 #include <iostream>
 #include <string>
 
@@ -19,11 +20,12 @@
 void cin();
 void test_bit_stuffing();
 void test_parity_bit();
+void test_stop_and_wait();
 
 frame f;
 int main()
 {
-    test_parity_bit();
+    test_stop_and_wait();
     system("pause");
     return 0;
 }
@@ -69,4 +71,23 @@ void test_parity_bit()
         f.checksum[i] = '0';
 
     std::cout << (check_parity_bit(f) ? "Corretto" : "Non corretto") << std::endl;
+}
+
+void test_stop_and_wait()
+{
+    Heaven protocol = Heaven();
+
+    packet p;
+    p.size = 0;
+    for (int i = 0; i < PACKET_MAXEL; i++)
+    {
+        if (i % 2 == 0)
+            p.message[i] = 'A';
+        else
+            p.message[i] = 'C';
+
+        p.size++;
+    }
+
+    protocol.send(p);
 }

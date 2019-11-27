@@ -16,6 +16,7 @@
  */
 
 #pragma once
+#include <iostream>
 
 /**
  * @brief Definisce il carattere ASCII 'ESC'. 
@@ -111,3 +112,38 @@ void insert_at(char *message, int &size, int pos, char value)
     message[pos] = value;
     size++;
 }
+
+/**
+ * @brief Classe per il livello fisico.
+ * 
+ * È una classe finta che serve solo per dei test.
+ */
+class Physical
+{
+public:
+    Physical() {}
+
+    void send(frame &f)
+    {
+        std::cout << "Frame inviato: ";
+        for (int i = 0; i < f.size; i++)
+            std::cout << f.message[i];
+        std::cout << std::endl;
+    }
+    /*frame receive()
+    {
+        frame f;
+        f.size = 0;
+
+        int i = 0;
+        for (char c = 'A'; c < 'Z'; c++)
+        {
+            f.message[i] = c;
+            f.checksum[i] = '0';
+            f.size++;
+            i++;
+        }
+
+        return f;
+    }*/
+};
