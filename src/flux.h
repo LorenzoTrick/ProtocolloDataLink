@@ -93,62 +93,66 @@ private:
 class HeavenByte
 {
 public:
-	HeavenByte()
-	{
-		for (int i = 0; i < FRAME_MAXEL; i++)
-		{
-			f.message[i] = '\0';
-			f.checksum[i] = '\0';
-		}
-		f.size = 0;
-	}
+    HeavenByte()
+    {
+        for (int i = 0; i < FRAME_MAXEL; i++)
+        {
+            f.message[i] = '\0';
+            f.checksum[i] = '\0';
+        }
+        f.size = 0;
+    }
 
-	void send(packet& p)
-	{
-		int i = 0; //n. carattere sul pacchetto
-		while (i < p.size)
-		{
-			frame f;
-			//primi marcatori
-			insert_at(f.message, f.size, 0, ESC);
-			insert_at(f.message, f.size, 1, STX);
+    void send(packet &p)
+    {
+        int i = 0; //n. carattere sul pacchetto
+        while (i < p.size)
+        {
+            frame f;
+            //primi marcatori
+            insert_at(f.message, f.size, 0, ESC);
+            insert_at(f.message, f.size, 1, STX);
 
-			//per ogni casella del messaggio
-			for (int j = 2; j < FRAME_MAXEL - 2; j++)
-			{
-				//se non é finito il pacchetto
-				if (i < p.size)
-				{
-					insert_at(f.message, f.size, j, p.message[i]);
+            //per ogni casella del messaggio
+            for (int j = 2; j < FRAME_MAXEL - 2; j++)
+            {
+                //se non é finito il pacchetto
+                if (i < p.size)
+                {
+                    insert_at(f.message, f.size, j, p.message[i]);
 
-					if (is_special_char(p.message[i])) //se speciale, duplica
-					{
-						j++;
-						insert_at(f.message, f.size, j, p.message[i]);
-					}
+                    if (is_special_char(p.message[i])) //se speciale, duplica
+                    {
+                        j++;
+                        insert_at(f.message, f.size, j, p.message[i]);
+                    }
 
-					i++;
+                    i++;
 
-					if (j == FRAME_MAXEL - 1) //manovra di sicurezza: se duplicando sono andato oltre
-					{
-						//cancella carattere
-						//mi rendo conto che é brutto, ma si capisce cosa fa e funziona -piro
-						delete_at(f.message, f.size, j);
-						j--;
-						delete_at(f.message, f.size, j);
-						j--;
-						i--;
-					}
-				}			
-			}
+                    if (j == FRAME_MAXEL - 1) //manovra di sicurezza: se duplicando sono andato oltre
+                    {
+                        //cancella carattere
+                        //mi rendo conto che é brutto, ma si capisce cosa fa e funziona -piro
+                        delete_at(f.message, f.size, j);
+                        j--;
+                        delete_at(f.message, f.size, j);
+                        j--;
+                        i--;
+                    }
+                }
+            }
 
-			//ultimi marcatori
-			insert_at(f.message, f.size, f.size, ESC);
-			insert_at(f.message, f.size, f.size, ETX);
+            //ultimi marcatori
+            insert_at(f.message, f.size, f.size, ESC);
+            insert_at(f.message, f.size, f.size, ETX);
 
-			//spedisci frame e resetta
-			physical.send(f);
-			f.size = 0;
-		}
-	}
+            //spedisci frame e resetta
+            physical.send(f);
+            f.size = 0;
+        }
+    }
+
+private:
+    frame f;
+    Physical physical;
 };

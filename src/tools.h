@@ -113,6 +113,14 @@ void insert_at(char *message, int &size, int pos, char value)
     size++;
 }
 
+/**
+ * @brief Ritorna un booleano che indica se il carattere passato
+ *        come parametro è un carattere speciale.
+ * 
+ * @param c char contente il carattere da controllare.
+ * @return true se il carattere è speciale.
+ * @return false se il carattere non è speciale.
+ */
 bool is_special_char(char c)
 {
     return (c == ESC || c == STX || c == ETX);

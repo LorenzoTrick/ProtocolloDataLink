@@ -21,11 +21,12 @@ void cin();
 void test_bit_stuffing();
 void test_parity_bit();
 void test_stop_and_wait();
+void test_crc();
 
 frame f;
 int main()
 {
-    test_stop_and_wait();
+    test_crc();
     system("pause");
     return 0;
 }
@@ -95,4 +96,10 @@ void test_stop_and_wait()
     for (int i = 0; i < p.size; i++)
         std::cout << p.message[i];
     std::cout << std::endl;
+}
+
+void test_crc()
+{
+    cin();
+    crc(f);
 }

@@ -14,6 +14,7 @@
 #pragma once
 #include "tools.h"
 #include <bitset>
+#include <vector>
 
 /**
  * @brief Calcola il parity bit del messaggio.
@@ -65,4 +66,20 @@ bool check_parity_bit(frame &f)
     }
 
     return ans;
+}
+
+void crc(frame &f)
+{
+    // Converto il messaggio in una stringa di bit
+    std::string bit_string = "\0";
+    for (int i = 0; i < f.size; i++)
+        bit_string += std::bitset<8>((int)f.message[i]).to_string();
+
+    // Converto la stringa in un vettore di booleani
+    bool *bits = new bool[bit_string.length()];
+    for (int i = 0; i < bit_string.length(); i++)
+    {
+        bits[i] = (bit_string[i] == '1' ? true : false);
+        std::cout << bits[i];
+    }
 }
