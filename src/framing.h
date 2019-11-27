@@ -37,7 +37,7 @@ bool bit_stuffing(frame &f)
                 f.message[i] -= 2; // Cambia penultimo bit
 
         // Inserisce flag alla fine
-        f.message[f.size++] = (char)FLAG;
+		insert_at(f.message, f.size, f.size, (char)FLAG);
     }
     else
         ans = false;
@@ -61,48 +61,11 @@ void remove_bit_stuffing(frame &f)
     }
 }
 
-/**
- * @brief Aggiunge il byte stuffing/character stuffing al frame.
- * 
- * @param f Oggetto @c frame in cui aggiungere byte stuffing.
- * @return true Se l'operazione è andata a buon termine.
- * @return false Se la grandezza supera quella del MAXEL.
-
- * @todo Fare in modo che la duplicazione dei caratteri restituisca ans = false se si é andato oltre il MAXEL.
- */
-bool byte_stuffing(frame &f)
-{
-    bool ans = true;
-
-    if (f.size < FRAME_MAXEL - 4)
-    {
-        //Inserisce caratteri di controllo all'inizio
-        insert_at(f.message, f.size, 0, ESC);
-        insert_at(f.message, f.size, 1, STX);
-
-        //Duplica se vede un carattere di controllo come messaggio
-        for (int i = 2; i < f.size; i++)
-            if (is_special_char(f.message[i]))
-            {
-                insert_at(f.message, f.size, i, f.message[i]);
-                i++; //va oltre il carattere appena duplicato
-            }
-
-        //Inserisce caratteri di controllo alla fine
-        insert_at(f.message, f.size, f.size - 1, ESC);
-        insert_at(f.message, f.size, f.size, ETX);
-    }
-    else
-        ans = false;
-
-    return ans;
-}
-
 void remove_byte_stuffing(frame &f)
 {
-    for (int i = 0; i < f.size; i++)
-    {
-        if (is_special_char(f.message[i]) && f.message[i + 1] == f.message[i])
-            delete_at(f.message, f.size, i);
-    }
+	for (int i = 0; i < f.size - 1; i++)
+	{
+		if (is_special_char(f.message[i]) && f.message[i + 1] == f.message[i])
+			delete_at(f.message, f.size, i);
+	}
 }
