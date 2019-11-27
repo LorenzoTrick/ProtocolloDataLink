@@ -81,3 +81,33 @@ struct packet
     /** Equivalente al numEl. */
     int size;
 };
+
+/**
+ * @brief Esegue lo shiftSx.
+ * 
+ * @param message char* su cui eseguire l'eliminazione dell'elemento.
+ * @param size int contenente la grandezza del messaggio.
+ * @param pos int contenente la posizione da eliminare.
+ */
+void delete_at(char *message, int &size, int pos)
+{
+    for (int i = pos; i < size - 1; i++)
+        message[i] = message[i + 1];
+    size--;
+}
+
+/**
+ * @brief Esegue lo shiftDx.
+ * 
+ * @param message char* su cui eseguire l'aggiunta dell'elemento.
+ * @param size int contenente la grandezza del messaggio.
+ * @param pos int contenente la posizione da eliminare.
+ * @param value char contenente il nuovo valore da inserire.
+ */
+void insert_at(char *message, int &size, int pos, char value)
+{
+    for (int i = size; i > pos; i--)
+        message[i] = message[i - 1];
+    message[pos] = value;
+    size++;
+}

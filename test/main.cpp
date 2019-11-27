@@ -24,9 +24,7 @@ int main()
     std::cin >> message;
 
     f.size = message.size();
-    f.message[0] = '\0';
-    f.message[f.size - 1] = '\0';
-    int i = 1;
+    int i = 0;
     for (char var : message)
     {
         f.message[i] = var;
@@ -34,14 +32,24 @@ int main()
     }
 
     bit_stuffing(f);
+    for (size_t i = 0; i < f.size; i++)
+        std::cout << f.message[i];
+    std::cout << std::endl;
+
+    remove_bit_stuffing(f);
+    for (size_t i = 0; i < f.size; i++)
+        std::cout << f.message[i];
+    std::cout << std::endl;
+
+    /*
     parity_bit(f);
     i = 0;
     for (i = 0; i < f.size; i++)
     {
         std::cout << f.checksum[i];
     }
+    */
 
-    std::cout << std::endl;
     system("pause");
     return 0;
 }
