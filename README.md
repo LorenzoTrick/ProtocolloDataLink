@@ -23,13 +23,13 @@ Per ora NON si implementa il piggybacking.
 
 ### Framing (framing.h):
 - [x] Character stuffing / Byte stuffing
-- [ ] Bit stuffing
+- [x] Bit stuffing
 
 Si ricorda che il flag per il bit stuffing e i codici ASCII per il character stuffing possono essere aggiunti nel file "tools.h" per tenere tutto più organizzato.
 
 ### Rilevamento e correzione errori (checksum.h):
 - [x] Parity bit
-- [ ] CRC (?)
+- [x] CRC (?)
 - [ ] Parity bit matrix (?)
 
 ## Precisazioni
