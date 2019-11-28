@@ -136,7 +136,10 @@ public:
                     f.message[f.size++] = p.message[i];
                     // Se è l'ultimo carattere del pacchetto lo invia
                     if (i + 1 == p.size)
+                    {
+                        byte_stuffing(f);
                         physical.send(f);
+                    }
                 }
             }
         }
