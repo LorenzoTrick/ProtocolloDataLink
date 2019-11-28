@@ -172,6 +172,7 @@ public:
 
     void receive(frame &f)
     {
+        // Con bit stuffing
         f.size = 2;
 
         int i = 0;
@@ -184,5 +185,22 @@ public:
             i++;
         }
         f.message[i] = (char)FLAG;
+
+        /*// Con byte stuffing
+        f.size = 4;
+
+        int i = 0;
+        f.message[i++] = (char)ESC;
+        f.message[i++] = (char)STX;
+        for (char c = 'A'; c <= 'Z'; c++)
+        {
+            f.message[i] = c;
+            f.checksum[i] = '0';
+            f.size++;
+            i++;
+        }
+        f.message[i++] = (char)ESC;
+        f.message[i++] = (char)ETX;
+        */
     }
 };
