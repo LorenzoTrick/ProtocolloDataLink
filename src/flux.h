@@ -81,7 +81,7 @@ public:
         for (int i = 0; i < f.size; i++)
             if (p.size < PACKET_MAXEL - 1)
                 p.message[p.size++] = f.message[i];
-        
+
         //Questo metodo riceve solo un frame, per riceverne altri sullo stesso pacchetto ripetere la receive nel main
     }
 
@@ -162,9 +162,14 @@ public:
                 p.message[p.size++] = f.message[i];
     }
 
-class StopAndWait()
+private:
+    frame f;
+    Physical physical;
+};
+
+class StopAndWait
 {
-    public:
+public:
     StopAndWait()
     {
         for (int i = 0; i < FRAME_MAXEL; i++)
@@ -174,37 +179,32 @@ class StopAndWait()
         }
         f.size = 0;
     }
-    
+
     void send(packet &p)
     {
         baselineFlux.send(p); //manda frame usando metodo dell'Heaven
-        
+
         //poi aspetta ricevimento ack
         packet ack;
         do
         {
             ack.size = 0;
-            baselineFlux.receive(ack); 
+            baselineFlux.receive(ack);
         } while (ack.message != ACK);
     }
-    
-    void receive (packet &p)
+
+    void receive(packet &p)
     {
         baselineFlux.receive(p); //riceve frame come Heaven
-        
+
         //poi manda ack
         packet ack;
         p.message[0] == ACK;
         baselineFlux.send(p);
     }
-    
-    private:
-    frame f;
-    Physical physical;
-    Heaven baselineFlux;
-}
-    
+
 private:
     frame f;
     Physical physical;
+    Heaven baselineFlux;
 };
