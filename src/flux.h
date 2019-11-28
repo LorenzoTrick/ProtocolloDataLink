@@ -52,9 +52,9 @@ public:
 
             // Se il frame è pieno (meno i due caratteri per il bit stuffing)
             // oppure se il messaggio del pacchetto è finito
-            if (f.size == FRAME_MAXEL - 2 || i + 1 == p.size)
+            if (f.size >= FRAME_MAXEL - 2 || i + 1 == p.size)
             {
-                // Esegue parity bit e lo invia
+                // Esegue bit stuffing e lo invia
                 bit_stuffing(f);
                 physical.send(f);
 
@@ -77,7 +77,7 @@ public:
         remove_bit_stuffing(f);
 
         // Ricostruisce il pacchetto
-        // Si da per scontato che il pacchetto abbia size = 0
+        // Si dà per scontato che il pacchetto abbia size = 0
         // o che contenga già parte del messaggio e quindi abbia size = n
         for (int i = 0; i < f.size; i++)
             if (p.size < PACKET_MAXEL - 1)
@@ -110,7 +110,6 @@ public:
         int i = 0; //n. carattere sul pacchetto
         while (i < p.size)
         {
-            frame f;
             //primi marcatori
             insert_at(f.message, f.size, 0, ESC);
             insert_at(f.message, f.size, 1, STX);
@@ -157,7 +156,6 @@ public:
     void receive(packet &p)
     {
         //riceve frame
-        frame f;
         physical.receive(f);
 
         p.size = 0;

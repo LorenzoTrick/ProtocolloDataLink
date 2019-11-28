@@ -14,7 +14,6 @@
 #pragma once
 #include "tools.h"
 #include <bitset>
-#include <vector>
 
 /**
  * @brief Calcola il parity bit del messaggio.
@@ -45,7 +44,7 @@ void parity_bit(frame &f)
  * 
  * @param f Oggetto @c frame contenente il frame in cui controllare gli errori.
  * @return true Se non ci sono errori.
- * @return false Se è presente uno o più errori.
+ * @return false Se sono presenti uno o più errori.
  */
 bool check_parity_bit(frame &f)
 {
@@ -69,10 +68,10 @@ bool check_parity_bit(frame &f)
 }
 
 /**
- * @brief Polinomio generatore equivalente al decimale 11.
+ * @brief Calcola il CRC del messaggio.
+ * 
+ * @param f Oggetto @c frame contenente il messaggio di cui calcolare il CRC.
  */
-const int polynom = 0b1011;
-int merge(int int1, int int2);
 void crc(frame &f)
 {
     // Costruisce il polinomio
@@ -94,24 +93,22 @@ void crc(frame &f)
         f.checksum[i++] = c;
 }
 
-int merge(int int1, int int2)
-{
-    int int2_copy = int2;
-    do
-    {
-        int1 *= 10;
-        int2_copy /= 10;
-    } while (int2_copy);
-
-    return int1 + int2;
-}
-
+/**
+ * @brief Controlla gli errori del frame (Con CRC).
+ * 
+ * @param f Oggetto @c frame contenente il frame in cui controllare gli errori.
+ * @return true Se non ci sono errori.
+ * @return false Se sono presenti uno o più errori.
+ */
 bool check_crc(frame &f)
 {
+    // Crea un frame uguale a quello passato per parametro.
     frame f_copy = f;
+    // Esegue il CRC sul frame copia.
     crc(f_copy);
 
     bool ans = true;
+    // Controlla che i checksum dei due frame siano uguali.
     for (int i = 0; i < 4; i++)
     {
         if (f_copy.checksum[i] != f.checksum[i])

@@ -29,7 +29,7 @@ Si ricorda che il flag per il bit stuffing e i codici ASCII per il character stu
 
 ### Rilevamento e correzione errori (checksum.h):
 - [x] Parity bit
-- [x] CRC (?)
+- [x] CRC
 - [ ] Parity bit matrix (?)
 
 ## Precisazioni

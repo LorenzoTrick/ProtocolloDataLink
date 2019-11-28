@@ -45,6 +45,13 @@ const char ETX = 3;
 const char FLAG = 0b01111110;
 
 /**
+ * @brief Polinomio generatore equivalente al decimale 11.
+ * 
+ * È usato per il calcolo del CRC.
+ */
+const int polynom = 0b1011;
+
+/**
  * @brief Definisce la lunghezza massima di un frame.
  */
 #define FRAME_MAXEL 256
@@ -124,6 +131,25 @@ void insert_at(char *message, int &size, int pos, char value)
 bool is_special_char(char c)
 {
     return (c == ESC || c == STX || c == ETX);
+}
+
+/**
+ * @brief Unisce due numeri nel seguente modo 2 + 7 = 27.
+ * 
+ * @param int1 int contenente il primo numero.
+ * @param int2 int contenente il secondo numero.
+ * @return int contenente l'unione dei due numeri.
+ */
+int merge(int int1, int int2)
+{
+    int int2_copy = int2;
+    do
+    {
+        int1 *= 10;
+        int2_copy /= 10;
+    } while (int2_copy);
+
+    return int1 + int2;
 }
 
 /**
