@@ -68,18 +68,58 @@ bool check_parity_bit(frame &f)
     return ans;
 }
 
+/**
+ * @brief Polinomio generatore equivalente al decimale 11.
+ */
+const int polynom = 0b1011;
+int merge(int int1, int int2);
 void crc(frame &f)
 {
-    // Converto il messaggio in una stringa di bit
-    std::string bit_string = "\0";
+    // Costruisce il polinomio
+    // e.g. f.message = {C, I, A, O} -> bits = 67736579
+    // Ossia trasforma il char in int (C = 67, I = 73 ...) e li mette insieme
+    unsigned long bits = 0;
     for (int i = 0; i < f.size; i++)
-        bit_string += std::bitset<8>((int)f.message[i]).to_string();
+        bits = merge(bits, f.message[i]);
 
-    // Converto la stringa in un vettore di booleani
-    bool *bits = new bool[bit_string.length()];
-    for (int i = 0; i < bit_string.length(); i++)
+    // Trova il resto e lo trasforma in bit
+    // Il massimo resto ottenibile da una divisione per 11 (polinomio generatore)
+    // è di 10. Quindi servono 4 bit per memorizzarlo
+    unsigned long rem = bits % polynom;
+    std::bitset<4> remainder_bits(rem);
+
+    // Inserisce il resto nel checksum
+    int i = 0;
+    for (char c : remainder_bits.to_string())
+        f.checksum[i++] = c;
+}
+
+int merge(int int1, int int2)
+{
+    int int2_copy = int2;
+    do
     {
-        bits[i] = (bit_string[i] == '1' ? true : false);
-        std::cout << bits[i];
+        int1 *= 10;
+        int2_copy /= 10;
+    } while (int2_copy);
+
+    return int1 + int2;
+}
+
+bool check_crc(frame &f)
+{
+    frame f_copy = f;
+    crc(f_copy);
+
+    bool ans = true;
+    for (int i = 0; i < 4; i++)
+    {
+        if (f_copy.checksum[i] != f.checksum[i])
+        {
+            ans = false;
+            break;
+        }
     }
+
+    return ans;
 }
