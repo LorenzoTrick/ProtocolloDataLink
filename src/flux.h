@@ -324,3 +324,119 @@ private:
     frame f;
     Physical physical;
 };
+
+class GoBackN
+{
+    public:
+    GoBackN()
+    {
+        sentIndex = 0;
+        receivedIndex = 0;
+    }
+    
+    void setupFrame(frame &f)
+    {
+        for (int i = 0; i < FRAME_MAXEL; i++)
+        {
+            f.message[i] = '\0';
+            f.checksum[i] = '\0';
+        }
+        f.size = 0;
+    }
+    
+    void send(packet &p)
+    {
+        int j = 0; //posizione nel pacchetto
+        
+        //riempie e manda i primi 5 frame
+        for (int i = 0; i < 5; i++)
+        {
+            //manda seq
+            f[i].message[0] = (char)i;
+            f[i].size++;
+            // Costruisce il frame
+            f[i].message[f.size] = p.message[j];
+            f[i].size++;
+            j++;
+
+            // Se il frame è pieno (meno i due caratteri per il bit stuffing)
+            // oppure se il messaggio del pacchetto è finito
+            if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
+            {
+                // Esegue bit stuffing e lo invia
+                bit_stuffing(f);
+                physical.send(f);
+            }
+        }
+        
+        // Aspetta ricevimento ack
+        frame ack;
+        unsigned long time_out = 0; // Lo aspetta per 10mila volte
+        do
+        {
+             ack.size = 0;
+             physical.receive(ack);
+        } while (ack.message[0] == '\0' || time_out++ > 10000);
+        
+        //se ack corretto
+        if (ack.message[0] == (char)(sentIndex))
+        {
+            //togli frame da memoria
+            for (int i = 0; i < 5; i++)
+                f[i] = f[i + 1];
+            sentIndex++;
+            
+            //manda quello dopo
+
+            //manda seq
+            f[i].message[0] = (char)i;
+            f[i].size++;
+            // Costruisce il frame
+            f[i].message[f.size] = p.message[j];
+            f[i].size++;
+            j++;
+
+            // Se il frame è pieno (meno i due caratteri per il bit stuffing)
+            // oppure se il messaggio del pacchetto è finito
+            if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
+            {
+                // Esegue bit stuffing e lo invia
+                bit_stuffing(f);
+                physical.send(f);
+            }
+            
+        }
+        else //se ack non corretto (frame persi)
+        {
+            //rimanda tutto da quello perso
+            for (int i = sentIndex; i < sentIndex + 5; i++)
+            {
+                //manda seq
+                f[i].message[0] = (char)i;
+                f[i].size++;
+                // Costruisce il frame
+                f[i].message[f.size] = p.message[j];
+                f[i].size++;
+                j++;
+
+                // Se il frame è pieno (meno i due caratteri per il bit stuffing)
+                // oppure se il messaggio del pacchetto è finito
+                if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
+                {
+                    // Esegue bit stuffing e lo invia
+                    bit_stuffing(f);
+                    physical.send(f);
+                }
+            }
+        }
+            
+                    
+    }
+    
+    private:
+    frame f[5];
+    int sentIndex;            
+    int receivedIndex;
+    Physical physical;
+};
+
