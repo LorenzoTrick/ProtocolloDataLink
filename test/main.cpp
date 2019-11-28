@@ -20,13 +20,14 @@
 void cin();
 void test_bit_stuffing();
 void test_parity_bit();
-void test_stop_and_wait();
+void test_heaven();
+void test_heaven_byte();
 void test_crc();
 
 frame f;
 int main()
 {
-    test_crc();
+    test_heaven_byte();
     system("pause");
     return 0;
 }
@@ -74,7 +75,7 @@ void test_parity_bit()
     std::cout << (check_parity_bit(f) ? "Corretto" : "Non corretto") << std::endl;
 }
 
-void test_stop_and_wait()
+void test_heaven()
 {
     Heaven protocol = Heaven();
 
@@ -92,6 +93,35 @@ void test_stop_and_wait()
 
     protocol.send(p);
 
+    p.size = 0;
+    protocol.receive(p);
+    for (int i = 0; i < p.size; i++)
+        std::cout << p.message[i];
+    std::cout << std::endl;
+}
+
+void test_heaven_byte()
+{
+    HeavenByte protocol = HeavenByte();
+
+    packet p;
+    p.size = 0;
+
+    for (int i = 0; i < PACKET_MAXEL - 9; i++)
+    {
+        if (i % 2 == 0)
+            p.message[i] = 'A';
+        else
+            p.message[i] = 'C';
+
+        p.size++;
+    }
+    p.message[PACKET_MAXEL - 9] = (char)ESC;
+    p.size++;
+
+    protocol.send(p);
+
+    p.size = 0;
     protocol.receive(p);
     for (int i = 0; i < p.size; i++)
         std::cout << p.message[i];

@@ -87,9 +87,9 @@ bool byte_stuffing(frame &f)
         insert_at(f.message, f.size, 1, (char)STX);
 
         // Duplica se è un carattere speciale
-        for (int i = 0; i < f.size; i++)
+        for (int i = 2; i < f.size; i++)
             if (f.message[i] == ESC)
-                insert_at(f.message, f.size, i, (char)ESC);
+                insert_at(f.message, f.size, i++, (char)ESC);
 
         // Inserisce i caratteri di fine
         insert_at(f.message, f.size, f.size, (char)ESC);

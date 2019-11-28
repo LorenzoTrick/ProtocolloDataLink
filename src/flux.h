@@ -72,7 +72,6 @@ public:
     void receive(packet &p)
     {
         // Riceve il frame e rimuove il bit stuffing
-        frame f;
         physical.receive(f);
         remove_bit_stuffing(f);
 
@@ -110,90 +109,57 @@ public:
 
     void send(packet &p)
     {
-        int i = 0; //n. carattere sul pacchetto
-        while (i < p.size)
+        int count = 0; // Contatore dei caratteri da duplicare
+        for (int i = 0; i < p.size; i++)
         {
-            //primi marcatori
-            insert_at(f.message, f.size, 0, ESC);
-            insert_at(f.message, f.size, 1, STX);
+            // Costruisce il frame
+            f.message[f.size] = p.message[i];
+            f.size++;
 
-            //per ogni casella del messaggio
-            for (int j = 2; j < FRAME_MAXEL - 2; j++)
+            // Se il frame è pieno (meno i quattro caratteri per il byte stuffing
+            // e quelli per la duplicazione)
+            // oppure se il messaggio è finito
+            if (f.size >= FRAME_MAXEL - 4 - count || i + 1 == p.size)
             {
-                //se non é finito il pacchetto
-                if (i < p.size)
+                // Esegue byte stuffing e lo invia
+                if (byte_stuffing(f))
                 {
-                    insert_at(f.message, f.size, j, p.message[i]);
+                    physical.send(f);
+                    f.size = 0;
+                }
+                else // Se non riesce perché l'ultimo carattere è un ESC
+                {
+                    // Invia il messaggio senza l'ultimo carattere
+                    f.size--;
+                    byte_stuffing(f);
+                    physical.send(f);
 
-                    if (p.message[i] == ESC) //se ESC, duplica
+                    // Resetta il frame e ci inserisce già il carattere ESC
+                    f.size = 0;
+                    f.message[f.size++] = p.message[i];
+                    // Se è l'ultimo carattere del pacchetto lo invia
+                    if (i + 1 == p.size)
                     {
-                        j++;
-                        insert_at(f.message, f.size, j, p.message[i]);
-                    }
-
-                    i++;
-
-                    if (j == FRAME_MAXEL - 1) //manovra di sicurezza: se duplicando sono andato oltre
-                    {
-                        //cancella carattere
-                        //mi rendo conto che é brutto, ma si capisce cosa fa e funziona -piro
-                        delete_at(f.message, f.size, j);
-                        j--;
-                        delete_at(f.message, f.size, j);
-                        j--;
-                        i--;
+                        byte_stuffing(f);
+                        physical.send(f);
                     }
                 }
             }
-
-            //ultimi marcatori
-            insert_at(f.message, f.size, f.size, ESC);
-            insert_at(f.message, f.size, f.size, ETX);
-
-            //spedisci frame e resetta
-            physical.send(f);
-            f.size = 0;
         }
     }
 
     void receive(packet &p)
     {
-        //riceve frame
+        // Riceve il frame e rimuove il byte stuffing
         physical.receive(f);
+        remove_byte_stuffing(f);
 
-        p.size = 0;
-
-        int i = 0;              //posizione
-        bool receiving = false; //false finché non ricevo ESC + STX
-        do
-        {
-            //se trovo un carattere di escape
-            if (f.message[i] == ESC)
-            {
-                //se il carattere dopo é la fine del frame stoppo il frame
-                if (f.message[i + 1] == ETX)
-                {
-                    receiving = false;
-                }
-                //se é l'inizio del frame lo segno, salto i caratteri di controllo e inizio poi a copiare i caratteri
-                else if (f.message[i + 1] == STX)
-                {
-                    receiving = true;
-                    i += 2;
-                }
-                //se é un ESC duplicato lo ignoro e basta
-                else if (f.message[i + 1] == ESC)
-                    i++;
-            }
-
-            //poi copio il carattere nel pacchetto
+        // Ricostruisce il pacchetto
+        // Si dà per scontato che il pacchetto abbia size = 0
+        // o che contenga già parte del messaggio e quindi abbia size = n
+        for (int i = 0; i < f.size; i++)
             if (p.size < PACKET_MAXEL - 1)
-            {
                 p.message[p.size++] = f.message[i];
-                i++; // e passo al successivo
-            }
-
-        } while (receiving);
     }
 
 class StopAndWait()
