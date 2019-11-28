@@ -82,7 +82,7 @@ public:
             if (p.size < PACKET_MAXEL - 1)
                 p.message[p.size++] = f.message[i];
 
-        //Questo metodo riceve solo un frame, per riceverne altri sullo stesso pacchetto ripetere la receive nel main
+        // Questo metodo riceve solo un frame, per riceverne altri sullo stesso pacchetto ripetere la receive nel main
     }
 
 private:
@@ -182,29 +182,61 @@ public:
 
     void send(packet &p)
     {
-        baselineFlux.send(p); //manda frame usando metodo dell'Heaven
-
-        //poi aspetta ricevimento ack
-        packet ack;
-        do
+        for (int i = 0; i < p.size; i++)
         {
-            ack.size = 0;
-            baselineFlux.receive(ack);
-        } while (ack.message != ACK);
+            // Costruisce il frame
+            f.message[f.size] = p.message[i];
+            f.size++;
+
+            // Se il frame è pieno (meno i due caratteri per il bit stuffing)
+            // oppure se il messaggio del pacchetto è finito
+            if (f.size >= FRAME_MAXEL - 2 || i + 1 == p.size)
+            {
+                // Esegue parity bit e bit stuffing e lo invia
+                parity_bit(f);
+                bit_stuffing(f);
+                physical.send(f);
+
+                //poi aspetta ricevimento ack
+                frame ack;
+                do
+                {
+                    ack.size = 0;
+                    physical.receive(ack);
+                } while (ack.message[0] != ACK);
+
+                // Resetta il frame
+                f.size = 0;
+            }
+        }
     }
 
     void receive(packet &p)
     {
-        baselineFlux.receive(p); //riceve frame come Heaven
+        // Riceve il frame e rimuove il bit stuffing
+        physical.receive(f);
+        remove_bit_stuffing(f);
 
-        //poi manda ack
-        packet ack;
-        p.message[0] == ACK;
-        baselineFlux.send(p);
+        // Controllo sull'errore
+        if (check_parity_bit(f))
+        {
+            // Se è giusto, invia l'ACK
+            frame ack;
+            ack.message[0] = ACK;
+            ack.size = 1;
+            physical.send(ack);
+
+            // Ricostruisce il pacchetto
+            // Si dà per scontato che il pacchetto abbia size = 0
+            // o che contenga già parte del messaggio e quindi abbia size = n
+            for (int i = 0; i < f.size; i++)
+                if (p.size < PACKET_MAXEL - 1)
+                    p.message[p.size++] = f.message[i];
+        }
+        // Questo metodo riceve solo un frame, per riceverne altri sullo stesso pacchetto ripetere la receive nel main
     }
 
 private:
     frame f;
     Physical physical;
-    Heaven baselineFlux;
 };

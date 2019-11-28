@@ -38,6 +38,11 @@ const char STX = 2;
 const char ETX = 3;
 
 /**
+ * @brief Definisce il carattere ASCII 'ACK'.
+ */
+const char ACK = 6;
+
+/**
  * @brief Definisce il flag per il bit stuffing.
  *
  * La sintassi qui sotto di @c FLAG è equivalente alla "string".
@@ -203,5 +208,5 @@ public:
         f.message[i++] = (char)ETX;
         insert_at(f.message, f.size, i - 2, (char)ESC);
         insert_at(f.message, f.size, i - 2, (char)ESC);
-        }
+    }
 };
