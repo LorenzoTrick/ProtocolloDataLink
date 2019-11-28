@@ -77,9 +77,11 @@ public:
         remove_bit_stuffing(f);
 
         // Ricostruisce il pacchetto
-        p.size = 0;
+        if (p.size == null) //lo inizializza se serve
+            p.size = 0;
         for (int i = 0; i < f.size; i++)
-            p.message[p.size++] = f.message[i];
+            if (p.size < PACKET_MAXEL - 1)
+                p.message[p.size++] = f.message[i];
     }
 
 private:
@@ -121,7 +123,7 @@ public:
                 {
                     insert_at(f.message, f.size, j, p.message[i]);
 
-                    if (is_special_char(p.message[i])) //se speciale, duplica
+                    if (p.message[i] == ESC) //se ESC, duplica
                     {
                         j++;
                         insert_at(f.message, f.size, j, p.message[i]);
@@ -149,6 +151,47 @@ public:
             //spedisci frame e resetta
             physical.send(f);
             f.size = 0;
+        }
+        
+        void receive(packet &p)
+        {
+            //riceve frame
+            frame f;
+            physical.receive(f);
+            
+            p.size = 0;
+            
+            int i = 0; //posizione
+            bool receiving = false; //false finché non ricevo ESC + STX
+            do
+            {
+                //se trovo un carattere di escape
+                if (f.message[i] == ESC)
+                {
+                    //se il carattere dopo é la fine del frame stoppo il frame
+                    if (f.message[i + 1] == ETX)
+                    {
+                        receiving = false;
+                    }
+                    //se é l'inizio del frame lo segno, salto i caratteri di controllo e inizio poi a copiare i caratteri 
+                    else if (f.message[i + 1] == STX)
+                    {
+                        receiving = true;
+                        i += 2;
+                    }
+                    //se é un ESC duplicato lo ignoro e basta
+                    else if (f.message[i + 1] == ESC)
+                        i++;
+                }
+                
+                //poi copio il carattere nel pacchetto
+                if (p.size < PACKET_MAXEL - 1)
+                {
+                    p.message[p.size++] = f.message[i];
+                    i++; // e passo al successivo
+                }
+                
+            } while (receiving);
         }
     }
 
