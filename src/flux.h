@@ -387,7 +387,7 @@ class GoBackN
             sentIndex++;
             
             //manda quello dopo
-
+            setupFrame(f[5]);
             //manda seq
             f[5].message[0] = (char)i;
             f[5].size++;
