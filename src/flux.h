@@ -167,6 +167,9 @@ private:
     Physical physical;
 };
 
+/**
+ * @brief Simula il protocollo Stop&Wait con bit stuffing
+ */
 class StopAndWait
 {
 public:
@@ -193,17 +196,98 @@ public:
             if (f.size >= FRAME_MAXEL - 2 || i + 1 == p.size)
             {
                 // Esegue parity bit e bit stuffing e lo invia
-                parity_bit(f);
                 bit_stuffing(f);
                 physical.send(f);
 
-                //poi aspetta ricevimento ack
+                // Aspetta ricevimento ack
                 frame ack;
                 do
                 {
                     ack.size = 0;
                     physical.receive(ack);
                 } while (ack.message[0] != ACK);
+
+                // Resetta il frame
+                f.size = 0;
+            }
+        }
+    }
+
+    void receive(packet &p)
+    {
+        // Riceve il frame e rimuove il bit stuffing
+        physical.receive(f);
+        remove_bit_stuffing(f);
+
+        // Se è giusto, invia l'ACK
+        frame ack;
+        ack.message[0] = ACK;
+        ack.size = 1;
+        physical.send(ack);
+
+        // Ricostruisce il pacchetto
+        // Si dà per scontato che il pacchetto abbia size = 0
+        // o che contenga già parte del messaggio e quindi abbia size = n
+        for (int i = 0; i < f.size; i++)
+            if (p.size < PACKET_MAXEL - 1)
+                p.message[p.size++] = f.message[i];
+
+        // Questo metodo riceve solo un frame, per riceverne altri sullo stesso pacchetto ripetere la receive nel main
+    }
+
+private:
+    frame f;
+    Physical physical;
+};
+
+/**
+ * @brief Simula il protocollo a Stop&Wait per canale rumoroso con bit stuffing e parity bit
+ */
+class StopAndWaitNoisy
+{
+public:
+    StopAndWaitNoisy()
+    {
+        for (int i = 0; i < FRAME_MAXEL; i++)
+        {
+            f.message[i] = '\0';
+            f.checksum[i] = '\0';
+        }
+        f.size = 0;
+    }
+
+    void send(packet &p)
+    {
+        for (int i = 0; i < p.size; i++)
+        {
+            // Costruisce il frame
+            f.message[f.size] = p.message[i];
+            f.size++;
+
+            // Se il frame è pieno (meno i due caratteri per il bit stuffing)
+            // oppure se il messaggio del pacchetto è finito
+            if (f.size >= FRAME_MAXEL - 2 || i + 1 == p.size)
+            {
+                // Esegue parity bit e bit stuffing e lo invia
+                parity_bit(f);
+                bit_stuffing(f);
+
+                bool sent = false;
+                do
+                {
+                    physical.send(f);
+
+                    // Aspetta ricevimento ack
+                    frame ack;
+                    unsigned long time_out = 0; // Lo aspetta per 10mila volte
+                    do
+                    {
+                        ack.size = 0;
+                        physical.receive(ack);
+                    } while (ack.message[0] != ACK || time_out++ > 10000);
+                    if (ack.message[0] == ACK)
+                        sent = true;
+                } while (!sent); // Se ancora non è arrivato l'ACK, invia di nuovo il frame
 
                 // Resetta il frame
                 f.size = 0;
