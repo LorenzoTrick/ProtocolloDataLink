@@ -389,20 +389,20 @@ class GoBackN
             //manda quello dopo
 
             //manda seq
-            f[i].message[0] = (char)i;
-            f[i].size++;
+            f[5].message[0] = (char)i;
+            f[5].size++;
             // Costruisce il frame
-            f[i].message[f.size] = p.message[j];
-            f[i].size++;
+            f[5].message[f.size] = p.message[j];
+            f[5].size++;
             j++;
 
             // Se il frame è pieno (meno i due caratteri per il bit stuffing)
             // oppure se il messaggio del pacchetto è finito
-            if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
+            if (f[5].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
             {
                 // Esegue bit stuffing e lo invia
-                bit_stuffing(f);
-                physical.send(f);
+                bit_stuffing(f[5]);
+                physical.send(f[5]);
             }
             
         }
@@ -411,26 +411,48 @@ class GoBackN
             //rimanda tutto da quello perso
             for (int i = sentIndex; i < sentIndex + 5; i++)
             {
-                //manda seq
-                f[i].message[0] = (char)i;
-                f[i].size++;
-                // Costruisce il frame
-                f[i].message[f.size] = p.message[j];
-                f[i].size++;
-                j++;
-
-                // Se il frame è pieno (meno i due caratteri per il bit stuffing)
-                // oppure se il messaggio del pacchetto è finito
-                if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
-                {
-                    // Esegue bit stuffing e lo invia
-                    bit_stuffing(f);
-                    physical.send(f);
-                }
+                physical.send(f[i]);
             }
         }
             
                     
+    }
+    
+    void receive(packet &p)
+    {
+        frame rf;
+        int j = 0; //posizione pacchetto
+        
+        physical.receive(rf);
+        remove_bit_stuffing(rf);
+        
+        //se il seq corrisponde
+        if (rf.message[1] == (char)(receivedIndex))
+        {
+            // Controllo sull'errore
+            if (check_parity_bit(rf))
+            {
+                // Ricostruisce il pacchetto
+                // Si dà per scontato che il pacchetto abbia size = 0
+                // o che contenga già parte del messaggio e quindi abbia size = n
+                for (int i = j; i < rf.size; i++)
+                {
+                    if (p.size < PACKET_MAXEL - 1)
+                    {
+                        p.message[p.size++] = rf.message[i];
+                        j++;
+                    }
+                }
+                
+                receivedIndex++;
+                
+                // Se è giusto, invia l'ACK
+                frame ack;
+                ack.message[0] = (char)(receivedIndex);
+                ack.size = 1;
+                physical.send(ack);
+            }
+        }
     }
     
     private:
