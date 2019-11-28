@@ -12,7 +12,7 @@ Il nome del file è stato proposto tra parentesi dopo il nome della sezione.
 
 ### Regolazione del flusso (flux.h):
 - [x] Heaven
-- [ ] Stop&Wait (Simplex Stop&Wait)
+- [x] Stop&Wait (Simplex Stop&Wait)
 - [ ] Stop&Wait per canali rumorosi (Simplex per canali rumorosi)
 - [ ] Sliding Window (A finestra scorrevole)
 
