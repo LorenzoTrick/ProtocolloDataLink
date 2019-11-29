@@ -330,8 +330,8 @@ class GoBackN
     public:
     GoBackN()
     {
-        sentIndex = 0;
-        receivedIndex = 0;
+        sentIndex = 1;
+        receivedIndex = 1;
     }
     
     void setupFrame(frame &f)
@@ -349,19 +349,19 @@ class GoBackN
         int j = 0; //posizione nel pacchetto
         
         //riempie e manda i primi 5 frame
-        for (int i = 0; i < 5; i++)
+        for (int i = sentIndex; i < sentIndex + 5; i++)
         {
             //manda seq
-            f[i].message[0] = (char)i;
-            f[i].size++;
+            f[i-1].message[0] = (char)(sentIndex);
+            f[i-1].size++;
             // Costruisce il frame
-            f[i].message[f.size] = p.message[j];
-            f[i].size++;
+            f[i-1].message[f[i-1].size] = p.message[j];
+            f[i-1].size++;
             j++;
 
             // Se il frame è pieno (meno i due caratteri per il bit stuffing)
             // oppure se il messaggio del pacchetto è finito
-            if (f[i].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
+            if (f[i-1].size >= FRAME_MAXEL - 2 || j + 1 == p.size)
             {
                 // Esegue bit stuffing e lo invia
                 bit_stuffing(f);
@@ -389,7 +389,7 @@ class GoBackN
             //manda quello dopo
             setupFrame(f[5]);
             //manda seq
-            f[5].message[0] = (char)i;
+            f[5].message[0] = (char)(sentIndex);
             f[5].size++;
             // Costruisce il frame
             f[5].message[f.size] = p.message[j];
@@ -409,7 +409,7 @@ class GoBackN
         else //se ack non corretto (frame persi)
         {
             //rimanda tutto da quello perso
-            for (int i = sentIndex; i < sentIndex + 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 physical.send(f[i]);
             }
@@ -427,7 +427,7 @@ class GoBackN
         remove_bit_stuffing(rf);
         
         //se il seq corrisponde
-        if (rf.message[1] == (char)(receivedIndex))
+        if (rf.message[0] == (char)(receivedIndex))
         {
             // Controllo sull'errore
             if (check_parity_bit(rf))
